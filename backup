@@ -2,7 +2,7 @@
 
 function removeinvalidindexoptions {
   echo "Cleaning invalid index (safe:null)"
-  for filename in dump/*.metadata.json
+  for filename in dump/**/*.metadata.json
   do
     mv $filename $filename.tmp
     sed -e 's/,"safe":null//g' \
