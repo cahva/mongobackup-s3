@@ -1,8 +1,20 @@
 #!/bin/bash
 
+function removeinvalidindexoptions {
+  echo "Cleaning invalid index (safe:null)"
+  for filename in dump/*.metadata.json
+  do
+    mv $filename $filename.tmp
+    sed -e 's/,"safe":null//g' \
+        -e 's/"safe":null,//g' <$filename.tmp >$filename
+    rm $filename.tmp
+  done
+}
+
 function restore {
   aws s3api get-object --bucket $S3BUCKET --key $FILE /backup/$FILE
   tar -zxvf /backup/$FILE -C /backup
+  removeinvalidindexoptions
   mongorestore -h $MONGO_HOST -p $MONGO_PORT dump/
   echo "Cleaning up..."
   rm -rf dump/ /backup/$FILE
